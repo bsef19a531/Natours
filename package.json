@@ -4,7 +4,7 @@
   "description": "Project to practice Node concepts",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon server.js"
   },
   "author": "Mohammad Abdullah",
   "license": "ISC",
