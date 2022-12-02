@@ -8,8 +8,8 @@ app.use(express.json());
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/data/tours-simple.json`));
 
-//Get tours Data from the server
-app.get('/api/v1/tours/', (req, res) => {
+//CallBack for Tours
+const getAllTours = (req, res) => {
 
     res.status(200).json({
         status: "success",
@@ -18,10 +18,9 @@ app.get('/api/v1/tours/', (req, res) => {
             tours: tours
         }
     })
-})
+};
 
-//Get tour Data from the server
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
 
     const id = req.params.id * 1;
 
@@ -41,16 +40,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
             tour
         }
     })
-})
+}
 
-// app.get('/', (req, res) => {
-
-//     res.status(200).json({ "app": "test", "message": "URL fetched" });
-
-// });
-
-// Save a tour data on the server
-app.post("/api/v1/tours/", (req, res) => {
+const saveTour = (req, res) => {
     // console.log(req.body);
     const newTour = Object.assign({ id: tours[tours.length - 1].id + 1 }, req.body);
 
@@ -63,12 +55,11 @@ app.post("/api/v1/tours/", (req, res) => {
                 tour: newTour
             }
         })
-    });
+    })
+}
 
-})
 
-//Update existing tour on the server
-app.patch("/api/v1/tours/:id", (req, res) => {
+const updateTour = (req, res) => {
 
     const id = req.params.id * 1;
     if (id >= tours.length) {
@@ -84,11 +75,10 @@ app.patch("/api/v1/tours/:id", (req, res) => {
             tour: "<Updated tour...>"
         }
     })
-})
+}
 
 
-//Delete existing tour on the server
-app.delete("/api/v1/tours/:id", (req, res) => {
+const deleteTour = (req, res) => {
 
     const id = req.params.id * 1;
     if (id >= tours.length) {
@@ -102,8 +92,15 @@ app.delete("/api/v1/tours/:id", (req, res) => {
         status: "success",
         data: null
     })
-})
+}
 
+
+
+//Get All tour and Post a Tour
+app.route("/api/v1/tours/").get(getAllTours).post(saveTour);
+
+//Get tour, update it and delete a Tour
+app.route("/api/v1/tours/:id").get(getTour).patch(updateTour).delete(deleteTour);
 
 const port = 3000;
 
