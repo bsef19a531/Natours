@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
 const app = require("./app");
+const mongoose = require("mongoose");
 
 dotenv.config({ path: "./config.env" });
 
@@ -16,23 +16,7 @@ mongoose.connect(DB, {
 });
 // console.log(process.env);
 
-const tourSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, "Tour must have a Name"],
-        unique: true
-    },
-    rating: {
-        type: Number,
-        default: 4.5
-    },
-    price: {
-        type: Number,
-        required: [true, "Tour Must have Price"]
-    }
-});
 
-const Tour = mongoose.model('Tour', tourSchema);
 
 const port = process.env.PORT;
 
