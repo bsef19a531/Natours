@@ -37,8 +37,19 @@ exports.getAllTours = async (req, res) => {
     //         tours: tours
     //     }
     // })
+    // const tours = await Tour.find().where('duration').equals(5);
+    // const tours = await Tour.find({duration: 5, difficulty: 'easy'});
+
     try {
-        const tours = await Tour.find();
+
+        // filtering
+        const queryObj = { ...req.query };
+        let queryStr = JSON.stringify(queryObj);
+
+        // Advance filtering
+        queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`);
+        console.log(JSON.parse(queryStr));
+        const tours = await Tour.find(JSON.parse(queryStr));
         res.status(200).json({
             status: "success",
             results: tours.length,
@@ -50,7 +61,7 @@ exports.getAllTours = async (req, res) => {
     catch (err) {
         res.status(404).json({
             status: "failed",
-            message: "Some Error occured"
+            message: err
         })
     }
 
