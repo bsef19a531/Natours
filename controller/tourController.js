@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Tour = require("./../models/tourModels");
-
+const APIFeatures = require('./../utils/tours/APIFeatures');
 // const tours = JSON.parse(fs.readFileSync(`${__dirname}/../data/tours-simple.json`));
 
 // exports.checkID = (req, res, next, val) => {
@@ -27,7 +27,12 @@ const Tour = require("./../models/tourModels");
 
 //     next();
 // }
-
+exports.aliasTopTours = (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = '-ratingAverage,price';
+    req.query.fields = 'name,price,duration,difficulty,rating,summary,ratingAverage';
+    next();
+}
 
 //CallBack for Tours
 exports.getAllTours = async (req, res) => {
@@ -45,57 +50,61 @@ exports.getAllTours = async (req, res) => {
     try {
 
         //Build Query
-        //1A)Filtering
-        const queryObj = { ...req.query };
-        const excludeFields = ['page', 'sort', 'limit', 'fields']
-        excludeFields.forEach(element => {
-            delete queryObj[element];
-        });
+        // //1A)Filtering
+        // const queryObj = { ...req.query };
+        // const excludeFields = ['page', 'sort', 'limit', 'fields']
+        // excludeFields.forEach(element => {
+        //     delete queryObj[element];
+        // });
 
-        //1B)Advance Filtering
-        let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`);
-        // console.log(JSON.parse(queryStr));
+        // //1B)Advance Filtering
+        // let queryStr = JSON.stringify(queryObj);
+        // queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`);
+        // // console.log(JSON.parse(queryStr));
 
-        let query = Tour.find(JSON.parse(queryStr));
+        // let query = Tour.find(JSON.parse(queryStr));
 
-        //console.log(req.query, queryObj, queryStr);
+        // //console.log(req.query, queryObj, queryStr);
 
-        //2 Sorting
-        //console.log(req.query, req.query.sort);
-        if (req.query.sort) {
-            const sortBy = req.query.sort.split(',').join(' ');
-            //console.log(sortBy);
-            query = query.sort(req.query.sort);
-        }
-        else {
-            query = query.sort('-createdAt');
-        }
+        // //2 Sorting
+        // //console.log(req.query, req.query.sort);
+        // if (req.query.sort) {
+        //     const sortBy = req.query.sort.split(',').join(' ');
+        //     //console.log(sortBy);
+        //     query = query.sort(req.query.sort);
+        // }
+        // else {
+        //     query = query.sort('-createdAt');
+        // }
 
-        //3 Field Limiting
+        // //3 Field Limiting
 
-        if (req.query.fields) {
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
-        }
-        else {
-            query = query.select('-__v');
-        }
+        // if (req.query.fields) {
+        //     const fields = req.query.fields.split(',').join(' ');
+        //     query = query.select(fields);
+        // }
+        // else {
+        //     query = query.select('-__v');
+        // }
 
         //4 Pagination
-        const page = req.query.page * 1 || 1;
-        const limit = req.query.limit * 1 || 100;
-        const skip = (page - 1) * limit;
+        // const page = req.query.page * 1 || 1;
+        // const limit = req.query.limit * 1 || 100;
+        // const skip = (page - 1) * limit;
 
-        query = query.skip(skip).limit(limit);
+        // query = query.skip(skip).limit(limit);
 
-        if (req.query.page) {
-            const numTours = await Tour.countDocuments();
-            if (skip > numTours) throw new Error("This page does not exist");
-        }
+        // if (req.query.page) {
+        //     const numTours = await Tour.countDocuments();
+        //     if (skip > numTours) throw new Error("This page does not exist");
+        // }
 
+        console.log("up");
+        const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().pagination();
+        console.log("below");
         //Execute query
-        const tours = await query;
+        const tours = await features.query;
+        console.log("down");
         // const tours = await Tour.find(JSON.parse(queryStr));
 
         //SEND RESPONSE
