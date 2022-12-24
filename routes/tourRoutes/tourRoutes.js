@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllTours, saveTour, getTour, updateTour, deleteTour, aliasTopTours } = require("./../../controller/tourController");
+const { getAllTours, saveTour, getTour, updateTour, deleteTour, aliasTopTours, getTourStats } = require("./../../controller/tourController");
 
 const router = express.Router();
 
@@ -9,6 +9,8 @@ const router = express.Router();
 // router.route("/").get(getAllTours).post(checkBody, saveTour);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
+
+router.route('/tour-stats').get(getTourStats)
 
 router.route("/").get(getAllTours).post(saveTour);
 
