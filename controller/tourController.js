@@ -99,12 +99,12 @@ exports.getAllTours = async (req, res) => {
         //     if (skip > numTours) throw new Error("This page does not exist");
         // }
 
-        console.log("up");
+
         const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().pagination();
-        console.log("below");
+
         //Execute query
         const tours = await features.query;
-        console.log("down");
+
         // const tours = await Tour.find(JSON.parse(queryStr));
 
         //SEND RESPONSE
@@ -190,7 +190,7 @@ exports.updateTour = async (req, res) => {
 
     try {
 
-        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true })
+        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
 
         res.status(200).json({
             status: "success",
