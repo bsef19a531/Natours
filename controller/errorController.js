@@ -16,7 +16,6 @@ const handleCastErrorDB = err => {
 }
 
 const sendErrorProd = (err, res) => {
-    // console.log("in prod func");
 
     if (err.isOperational) {
         res.status(err.statusCode).json({
@@ -44,9 +43,13 @@ module.exports = (err, req, res, next) => {
         sendErrorDev(err, res);
     }
     else /*if (process.env.NODE_ENV === 'production')*/ {
-        // console.log("in prod");
+
         let error = { ...err };
-        if (error.name === "CastError") { error = handleCastErrorDB(error); }
+        if (error.name === 'CastError') {
+            console.log("in else");
+            error = handleCastErrorDB(error);
+        }
+
         sendErrorProd(error, res);
     }
     // console.log("getting out");
